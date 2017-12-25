@@ -10,40 +10,7 @@ class CurrencyRow extends Component {
         isError: false
     };
 
-
-    fetchDoge = () => {
-        this.setState({fetching: true});
-        fetch(`https://btc-trade.com.ua/api/trades/buy/${this.props.code}`)
-            .then(response => response.json())
-            .then(buyResult => {
-                fetch(`https://btc-trade.com.ua/api/trades/sell/${this.props.code}`)
-                    .then(response1 => response1.json())
-                    .then(sellResult => {
-                        this.setState({
-                            fetching: false,
-                            isError: false,
-                            buyResult,
-                            sellResult,
-                        });
-                    })
-                    .catch(error => {
-                        console.log(error);
-                        this.setState({
-                            isError: true,
-                        })
-                    });
-            })
-            .catch(error => {
-                console.log(error);
-                this.setState({
-                    isError: true,
-                })
-            });
-
-    };
-
     componentWillMount() {
-        // this.fetchDoge();
         this.props.sellBuyFetch(this.props.code);
     }
 
@@ -87,8 +54,6 @@ class CurrencyRow extends Component {
     }
 
     render() {
-        // console.log('render');
-        // console.log(this.state);
         return (
             <View style={styles.containerStyle}>
                 <Text style={styles.titleStyle}>{this.props.title}</Text>

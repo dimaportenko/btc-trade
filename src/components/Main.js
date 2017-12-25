@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { ScrollView, View, StyleSheet, RefreshControl } from 'react-native';
 import { connect } from 'react-redux';
+import { sellBuyFetch } from '../actions';
 import CurrencyRow from './CurrencyRow';
 
 class Main extends Component {
+    state = {
+        refreshing: false
+    };
+
     renderCurrencies() {
         return Object.values(this.props.currencies).map(item => {
             return (
@@ -16,10 +21,26 @@ class Main extends Component {
         });
     }
 
+    onRefresh = () => {
+        Object.values(this.props.currencies).map(item => {
+            this.props.sellBuyFetch(item.code);
+        });
+    };
+
     render() {
         return (
-            <View style={styles.container}>
-                {this.renderCurrencies()}
+            <View style={{flex: 7, backgroundColor: '#F8F4FC'}}>
+                <ScrollView
+                    style={styles.container}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.onRefresh}
+                        />
+                    }
+                >
+                    {this.renderCurrencies()}
+                </ScrollView>
             </View>
         );
     }
@@ -28,7 +49,6 @@ class Main extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
         marginTop: 30,
     },
 });
@@ -37,4 +57,4 @@ const mapStateToProps = ({ currencies }) => {
     return { currencies };
 };
 
-export default connect(mapStateToProps)(Main);
+export default connect(mapStateToProps, { sellBuyFetch })(Main);
