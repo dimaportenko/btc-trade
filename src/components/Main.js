@@ -10,10 +10,10 @@ class Main extends Component {
 
     fetchDoge = () => {
         this.setState({fetching: true});
-        fetch('https://btc-trade.com.ua/api/trades/buy/doge_uah')
+        fetch(`https://btc-trade.com.ua/api/trades/buy/${this.props.code}`)
             .then(response => response.json())
             .then(buyResult => {
-                fetch('https://btc-trade.com.ua/api/trades/sell/doge_uah')
+                fetch(`https://btc-trade.com.ua/api/trades/sell/${this.props.code}`)
                     .then(response1 => response1.json())
                     .then(sellResult => {
                         this.setState({
@@ -42,10 +42,6 @@ class Main extends Component {
     componentWillMount() {
         this.fetchDoge();
     }
-    componentWillReceiveProps(next) {
-        console.log('update props');
-        console.log(next);
-    }
 
     renderResults() {
         if (this.state.fetching) {
@@ -58,30 +54,58 @@ class Main extends Component {
 
         return (
             <View>
-                <Text>Buy - {this.state.buyResult.max_price}</Text>
-                <Text>Sell - {this.state.sellResult.min_price}</Text>
+                <Text style={styles.rateStyle}>Buy - {this.state.buyResult.max_price}</Text>
+                <Text style={styles.rateStyle}>Sell - {this.state.sellResult.min_price}</Text>
             </View>
         )
     }
 
-    render() {
-        console.log('render');
-        console.log(this.state);
-        return (
-            <View>
-                <Text style={{ marginBottom: 10, textAlign: 'center' }}>Doge</Text>
-                <View style={{ marginBottom: 10}}>
-                    {this.renderResults()}
-                </View>
+    renderRefreshButton() {
+        if (!this.state.fetching) {
+            return (
                 <Button
-                    title="Refresh"
-                    icon={{ name: 'refresh' }}
-                    // backgroundColor: '#4496EC'
+                    icon={{ name: 'refresh', color: '#4496EC' }}
+                    backgroundColor='rgba(0, 0, 0, 0)'
                     onPress={this.fetchDoge}
                 />
+            );
+        }
+    }
+
+    render() {
+        // console.log('render');
+        // console.log(this.state);
+        return (
+            <View style={styles.containerStyle}>
+                <Text style={styles.titleStyle}>{this.props.title}</Text>
+                <View style={styles.rateContainerStyle}>
+                    {this.renderResults()}
+                </View>
+                {this.renderRefreshButton()}
             </View>
         );
     }
 }
+
+const styles = {
+    containerStyle: {
+        marginBottom: 20,
+        justifyContent: 'space-around',
+        flexDirection: 'row',
+    },
+    titleStyle: {
+        marginBottom: 10,
+        fontWeight: 'bold',
+        width: '30%',
+        textAlign: 'center',
+        justifyContent:'center'
+    },
+    rateStyle: {
+        textAlign: 'left',
+    },
+    rateContainerStyle: {
+        width: '50%',
+    }
+};
 
 export default Main;
